@@ -3,10 +3,10 @@
     "description": "Yii2 Glide integration",
     "type": "library",
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.3",
 
-        "league/flysystem": "^3.0.21",
-        "league/glide": "^2.2.2",
+        "league/flysystem": "^3.0",
+        "league/glide": "^3.0",
         "yiisoft/yii2": "~2.0.19"
     },
     "license": "MIT",
@@ -16,12 +16,7 @@
             "email": "joey_claessen@hotmail.com"
         }
     ],
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://asset-packagist.org"
-        }
-    ],
+    "repositories": [],
     "autoload": {
         "psr-4": {
             "WolfpackIT\\glide\\": ["src/"]

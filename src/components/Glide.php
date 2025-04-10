@@ -103,7 +103,6 @@ class Glide extends Component
                 new Background(),
                 new Border(),
                 $this->watermarks ? new Watermark($this->watermarks, $this->watermarksPathPrefix) : null,
-                new Encode(),
             ]);
     }
 
