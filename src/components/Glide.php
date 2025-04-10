@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace WolfpackIT\glide\components;
 
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
 use Intervention\Image\ImageManager;
 use League\Flysystem\Filesystem;
 use League\Glide\Api\Api;
@@ -13,7 +15,6 @@ use League\Glide\Manipulators\Border;
 use League\Glide\Manipulators\Brightness;
 use League\Glide\Manipulators\Contrast;
 use League\Glide\Manipulators\Crop;
-use League\Glide\Manipulators\Encode;
 use League\Glide\Manipulators\Filter;
 use League\Glide\Manipulators\Flip;
 use League\Glide\Manipulators\Gamma;
@@ -26,9 +27,7 @@ use League\Glide\Manipulators\Watermark;
 use League\Glide\Responses\ResponseFactoryInterface;
 use League\Glide\Server;
 use yii\base\Component;
-use yii\base\InvalidConfigException;
 use yii\di\Instance;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
 class Glide extends Component
@@ -38,7 +37,7 @@ class Glide extends Component
     public string $cachePathPrefix = '';
     public array $defaults = [];
     public bool $groupCacheInFolders = true;
-    public string $imageManager;
+    public ImageManager $imageManager;
     /**
      * @var ManipulatorInterface[]
      */
@@ -68,12 +67,6 @@ class Glide extends Component
         $this->source = Instance::ensure($this->source, Filesystem::class);
         $this->watermarks = Instance::ensure($this->watermarks, Filesystem::class);
         $this->responseFactory = Instance::ensure($this->responseFactory, ResponseFactoryInterface::class);
-
-        $allowedImageManagerValues = ['imagic', 'gd'];
-
-        if (isset($this->imageManager) && !ArrayHelper::isIn($this->imageManager, $allowedImageManagerValues)) {
-            throw new InvalidConfigException('ImageManager must be one of: ' . implode(', ', $allowedImageManagerValues));
-        }
 
         $this->initManipulators();
 
@@ -121,11 +114,9 @@ class Glide extends Component
     public function getImageManager(): ImageManager
     {
         if (!isset($this->_imageManager)) {
-            $imageManager =
+            $this->_imageManager =
                 $this->imageManager
-                ?? (extension_loaded('imagick') ? 'imagick' : 'gd');
-
-            $this->_imageManager = new ImageManager(['driver' => $imageManager]);
+                ?? new ImageManager((extension_loaded('imagick') ? new ImagickDriver() : new GdDriver()));
         }
 
         return $this->_imageManager;
